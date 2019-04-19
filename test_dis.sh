@@ -11,34 +11,19 @@ do
                 echo '';
                 fi
 
-        done
-
-done > all_test.txt
-
-for TEST_NAME in $(cat all_test.txt);
-do
-        if [[ $TEST_NAME = \./sql*  ]]; then
-        export A=4;
-        else
-        echo $TEST_NAME;
-        fi
-done > temp.txt
-
-for TEST_PATH_LOCAL in $(cat temp.txt);
+        for TEST_NAME in $LOC;
         do
-        get_project_name() {
-             local TEST_PATH=$1
-             echo $TEST_PATH | awk -F "/src" '{ print $1 }' | awk -F "/" '{ print $NF }'
-        }
+                if [[ $TEST_NAME = \./sql*  ]]; then
+                export A=4;
+                else
+                echo $TEST_NAME;
+                fi
 
-        get_class_name() {
-             local TEST_PATH=$1
-             echo $TEST_PATH | sed -re 's/^(.)*java\/(.+).java$/\2/' | tr '/' '.'
-        }
-
-        for TEST_PATH in $TEST_PATH_LOCAL; do
-                PROJECT_NAME=$(get_project_name ${TEST_PATH})
-                CLASS_NAME=$(get_class_name ${TEST_PATH})
+        for  TEST_PATH_LOCAL in $TEST_NAME; do
+                PROJECT_NAME=$(echo $TEST_PATH_LOCAL | awk -F "/src" '{ print $1 }' | awk -F "/" '{ print $NF }')
+                CLASS_NAME=$(echo $TEST_PATH_LOCAL | sed -re 's/^(.)*java\/(.+).java$/\2/' | tr '/' '.')
                 echo ./build/mvn -Dtest=${CLASS_NAME} test -pl ${PROJECT_NAME}
         done
+    done
+    done
 done > test.sh
